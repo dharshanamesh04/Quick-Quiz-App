@@ -1,26 +1,25 @@
-"QUICK QUIZ APP"
->>A lightweight, browser-based quiz game designed to test your knowledge across various topics. 
->>Built with HTML, CSS, and JavaScript, this app offers a seamless and engaging user experience.
+Quick Quiz App:
+>>Quick Quiz App is an interactive, browser-based quiz game that allows users to test their knowledge across multiple topics. Built with HTML, CSS, and JavaScript, the app offers a smooth, responsive experience on both desktop and mobile devices.
 
-"FEATURES"
->>Interactive Gameplay: Answer multiple-choice questions within a time limit.
->>Highscore Tracking: View and compare your best scores.
->>Responsive Design: Optimized for both desktop and mobile devices.
->>JSON-Based Questions: Easily customizable question sets.
+Key Features:
+>>Interactive gameplay with multiple-choice questions under a timer.
+>>Highscore tracking to save and compare top scores.
+>>Easily customizable question sets.
+>>Responsive design for desktops, tablets, and mobile screens.
 
-"TECH STACK"
+Tech Stack:
 >>Frontend: HTML, CSS, JavaScript
->>Data: JSON for question storage
+>>Data Storage: JSON for questions
 
-""INSTALLATION & USAGE""
-CLONE THE REPOSITORY:
+INSTALLATION & USAGE
+>>CLONE THE REPOSITORY:
 git clone https://github.com/dharshanamesh04/Quick-Quiz-App.git
 cd Quick-Quiz-App
 
-""OPEN THE GAME""
+OPEN THE GAME
 >>Launch the game.html file in your preferred web browser.
->>Customize Questions:
+>>Customize Questions
 >>Edit the question.json file to add or modify quiz questions.
 
-""LISCENSE"":
+LISCENSE
 >>This project is licensed under the MIT License - see the LICENSE file for details.
