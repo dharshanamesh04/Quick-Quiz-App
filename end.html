@@ -1,36 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Congrats!</title>
-  <link rel="stylesheet" href="app.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Result</title>
+  <link rel="stylesheet" href="end.css">
 </head>
 <body>
-  <div class="container">
-    <div id="end" class="flex-center flex-column">
-      <h1 id="finalScore">0</h1>
-      <form>
-        <input 
-          type="text" 
-          name="username" 
-          id="username" 
-          placeholder="username" 
-        />
-        <button 
-          type="submit" 
-          class="btn" 
-          id="saveScoreBtn" 
-          onclick="saveHighScore(event)"
-        >
-          Save
-        </button>
-      </form>
-      <a class="btn" href="/game.html">Play Again</a>
-      <a class="btn" href="/">Go Home</a>
-    </div>
+  <div class="end-container">
+    <h1>Quiz Completed!</h1>
+    <p>Your Score:</p>
+    <div id="score">0</div>
+    <button id="restart-btn">Play Again</button>
   </div>
-  <script src="end.js"></script>
+
+  <script>
+    const score = localStorage.getItem("mostRecentScore");
+    document.getElementById("score").innerText = score || 0;
+
+    document.getElementById("restart-btn").addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  </script>
 </body>
 </html>

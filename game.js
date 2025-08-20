@@ -1,103 +1,97 @@
-const question = document.getElementById("question");
-const choices = Array.from(document.getElementsByClassName("choice-text"));
-const progressText = document.getElementById("progressText");
-const scoreText = document.getElementById("score");
-const progressBarFull = document.getElementById("progressBarFull");
-const game = document.getElementById("game");
-const loader = document.getElementById("loader");
-
-let currentQuestion = {};
-let acceptingAnswers = true;
-let score = 0;
-let questionCounter = 0;
-let availableQuestions = [];
-
 let questions = [];
+let currentQuestionIndex = 0;
+let score = 0;
 
-fetch("https://opentdb.com/api.php?amount=15&category=9&difficulty=medium")
-  .then(res => res.json())
-  .then(loadedQuestions => {
-    questions = loadedQuestions.results.map(loadedQuestion => {
-      const formattedQuestion = {
-        question: loadedQuestion.question
+const questionEl = document.getElementById("question");
+const choices = Array.from(document.getElementsByClassName("choice-text"));
+const scoreEl = document.getElementById("score");
+const progressBarFull = document.getElementById("progressBarFull");
+const progressText = document.getElementById("progressText");
+
+questionEl.innerText = "Loading questions, please wait...";
+
+async function fetchQuestions() {
+  try {
+    const res = await fetch(
+      'https://opentdb.com/api.php?amount=10&category=9&type=multiple'
+    );
+    const data = await res.json();
+    if (!data.results || data.results.length === 0) {
+      throw new Error("No questions returned from API");
+    }
+
+    return data.results.map(q => {
+      const answers = [...q.incorrect_answers, q.correct_answer];
+      answers.sort(() => Math.random() - 0.5);
+      return {
+        question: decodeHTML(q.question),
+        choices: answers.map(decodeHTML),
+        correctAnswer: decodeHTML(q.correct_answer)
       };
-
-      const answerChoices = [...loadedQuestion.incorrect_answers];
-      formattedQuestion.answer = Math.floor(Math.random() * 4) + 1;
-      answerChoices.splice(formattedQuestion.answer - 1, 0, loadedQuestion.correct_answer);
-
-      answerChoices.forEach((choice, index) => {
-        formattedQuestion["choice" + (index + 1)] = choice;
-      });
-
-      return formattedQuestion;
     });
 
-    startGame();
-  })
-  .catch(err => {
-    console.error(err);
-  });
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    questionEl.innerText = "Failed to load questions. Please try again after checking your internet connection.";
+    return [];
+  }
+}
 
-const CORRECT_BONUS = 10;
-const MAX_QUESTIONS = 10; // same as API amount
+function decodeHTML(str) {
+  const txt = document.createElement("textarea");
+  txt.innerHTML = str;
+  return txt.value;
+}
 
-startGame = () => {
-  questionCounter = 0;
+async function startGame() {
   score = 0;
-  availableQuestions = [...questions];
-  getNewQuestion();
-  game.classList.remove("hidden");
-  loader.classList.add("hidden");
-};
+  currentQuestionIndex = 0;
+  scoreEl.innerText = score;
 
-getNewQuestion = () => {
-  if (availableQuestions.length === 0 || questionCounter >= MAX_QUESTIONS) {
+  questions = await fetchQuestions();
+
+  if (questions.length === 0) return; // stop if failed
+
+  showQuestion();
+}
+
+function showQuestion() {
+  if (currentQuestionIndex >= questions.length) {
     localStorage.setItem("mostRecentScore", score);
-    return window.location.assign("/end.html");
+    return window.location.assign("end.html");
   }
 
-  questionCounter++;
-  progressText.innerText = `${questionCounter}/${MAX_QUESTIONS}`;
-  progressBarFull.style.width = `${(questionCounter / MAX_QUESTIONS) * 100}%`;
+  const currentQuestion = questions[currentQuestionIndex];
+  questionEl.innerText = currentQuestion.question;
+  progressText.innerText = `Question ${currentQuestionIndex + 1}/${questions.length}`;
+  progressBarFull.style.width = `${(currentQuestionIndex / questions.length) * 100}%`;
 
-  const questionIndex = Math.floor(Math.random() * availableQuestions.length);
-  currentQuestion = availableQuestions[questionIndex];
-  question.innerHTML = currentQuestion.question; // use innerHTML since API returns HTML entities
-
-  choices.forEach(choice => {
-    const number = choice.dataset["number"];
-    choice.innerHTML = currentQuestion["choice" + number];
+  choices.forEach((choiceEl, index) => {
+    choiceEl.innerText = currentQuestion.choices[index];
+    choiceEl.classList.remove("correct", "incorrect");
   });
-
-  availableQuestions.splice(questionIndex, 1);
-  acceptingAnswers = true;
-};
+}
 
 choices.forEach(choice => {
   choice.addEventListener("click", e => {
-    if (!acceptingAnswers) return;
-    acceptingAnswers = false;
+    const selectedAnswer = e.target.innerText;
+    const currentQuestion = questions[currentQuestionIndex];
 
-    const selectedChoice = e.target;
-    const selectedAnswer = selectedChoice.dataset["number"];
-
-    const classToApply = selectedAnswer == currentQuestion.answer ? "correct" : "incorrect";
-
-    if (classToApply === "correct") {
-      incrementScore(CORRECT_BONUS);
+    if (selectedAnswer === currentQuestion.correctAnswer) {
+      e.target.classList.add("correct");
+      score++;
+      scoreEl.innerText = score;
+    } else {
+      e.target.classList.add("incorrect");
+      const correctIndex = currentQuestion.choices.indexOf(currentQuestion.correctAnswer);
+      choices[correctIndex].classList.add("correct");
     }
 
-    selectedChoice.parentElement.classList.add(classToApply);
-
     setTimeout(() => {
-      selectedChoice.parentElement.classList.remove(classToApply);
-      getNewQuestion();
+      currentQuestionIndex++;
+      showQuestion();
     }, 1000);
   });
 });
 
-incrementScore = num => {
-  score += num;
-  scoreText.innerText = score;
-};
+startGame();

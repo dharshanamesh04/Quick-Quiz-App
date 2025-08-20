@@ -1,0 +1,18 @@
+[
+  {
+    "question": "What does HTML stand for?",
+    "choice1": "Hyper Text Markup Language",
+    "choice2": "Home Tool Markup Language",
+    "choice3": "Hyperlinks and Text Markup Language",
+    "choice4": "Hyperlinking Text Mark Language",
+    "answer": 1
+  },
+  {
+    "question": "Which language is used for styling web pages?",
+    "choice1": "HTML",
+    "choice2": "JQuery",
+    "choice3": "CSS",
+    "choice4": "XML",
+    "answer": 3
+  }
+]
